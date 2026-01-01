@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sejwani & Co. | Advocates & Notaries</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Mulish:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- 1. CORE VARIABLES & RESET --- */
+        :root {
+            --primary-sage: #3A4D45;    /* Darker, more authoritative sage */
+            --light-sage: #EBF0ED;      /* Soft background */
+            --warm-sand: #FDFBF7;       /* Paper-like texture */
+            --text-dark: #1F2937;
+            --text-body: #4B5563;
+            --white: #FFFFFF;
+            --accent-clay: #C07F5F;     /* Warmth/Action color */
+            --gold-touch: #D4AF37;      /* Subtle hint of heritage */
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Mulish', sans-serif;
+            color: var(--text-dark);
+            background-color: var(--warm-sand);
+            line-height: 1.7;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
+
+        /* Stop scrolling when modal is open */
+        body.modal-open { overflow: hidden; }
+
+        h1, h2, h3, h4, h5 {
+            font-family: 'Lora', serif;
+            color: var(--primary-sage);
+            font-weight: 500;
+        }
+
+        a { text-decoration: none; transition: 0.3s; }
+        
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 25px;
+        }
+
+        /* --- 2. THE MANDATORY DISCLAIMER (BAR COUNCIL COMPLIANCE) --- */
+        #disclaimer-modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .disclaimer-content {
+            background: var(--white);
+            max-width: 600px;
+            padding: 40px;
+            border-radius: 4px;
+            text-align: left;
+            border-top: 5px solid var(--accent-clay);
+        }
+
+        .disclaimer-content h3 { font-size: 1.5rem; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .disclaimer-content p, .disclaimer-content ul li { font-size: 0.9rem; color: var(--text-body); margin-bottom: 15px; }
+        .disclaimer-content ul { padding-left: 20px; margin-bottom: 20px; }
+        
+        .btn-agree {
+            background-color: var(--primary-sage);
+            color: var(--white);
+            border: none;
+            padding: 12px 30px;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 4px;
+            width: 100%;
+            font-weight: 600;
+        }
+        .btn-agree:hover { background-color: var(--accent-clay); }
+
+        /* --- 3. HEADER --- */
+        header {
+            background-color: var(--white);
+            padding: 20px 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-flex { display: flex; justify-content: space-between; align-items: center; }
+        
+        .logo { font-size: 1.6rem; letter-spacing: 0.5px; font-weight: 600; color: var(--primary-sage); }
+        .logo span { font-style: italic; font-weight: 400; color: var(--accent-clay); }
+
+        .header-cta {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--primary-sage);
+            border-bottom: 2px solid var(--accent-clay);
+            padding-bottom: 2px;
+        }
+
+        /* --- 4. REDESIGNED HERO SECTION (Split Editorial Layout) --- */
+        .hero {
+            position: relative;
+            /* Changed from background image to soft color */
+            background-color: var(--light-sage); 
+            min-height: 90vh;
+            display: flex;
+            align-items: center;
+            padding: 80px 0;
+            overflow: hidden;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr 0.9fr; /* Text larger than image */
+            gap: 60px;
+            align-items: center;
+        }
+
+        .hero-text-content {
+            z-index: 2;
+        }
+
+        .est-pill {
+            display: inline-block;
+            background: rgba(58, 77, 69, 0.1); /* Subtle dark background */
+            color: var(--primary-sage);
+            border: 1px solid var(--primary-sage);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 30px;
+        }
+
+        .hero h1 {
+            font-size: 4rem; /* Larger, magazine style */
+            color: var(--primary-sage);
+            line-height: 1.1;
+            margin-bottom: 25px;
+            /* No text shadow for clean look */
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            font-weight: 400;
+            color: var(--text-body);
+            margin-bottom: 40px;
+            max-width: 90%;
+            line-height: 1.8;
+        }
+
+        .hero-image-wrapper {
+            position: relative;
+        }
+
+        .hero-img-frame {
+            position: relative;
+            z-index: 2;
+            border-radius: 8px 8px 100px 8px; /* Unique shape: Top-Left, TR, Bottom-Right (Curve), BL */
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            height: 500px;
+        }
+
+        .hero-img-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Decorative "Clay" box behind the image */
+        .hero-decor-box {
+            position: absolute;
+            top: 20px;
+            right: -20px;
+            width: 100%;
+            height: 100%;
+            background-color: var(--accent-clay);
+            border-radius: 8px 8px 100px 8px;
+            z-index: 1;
+        }
+
+        .btn-hero {
+            background-color: var(--primary-sage);
+            color: var(--white);
+            padding: 18px 45px;
+            border-radius: 4px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            box-shadow: 0 10px 20px rgba(58, 77, 69, 0.2);
+            display: inline-block;
+        }
+        .btn-hero:hover { 
+            background-color: var(--accent-clay); 
+            transform: translateY(-3px); 
+        }
+
+        /* --- 5. EMPATHY & INTRO --- */
+        .intro-section { padding: 100px 0; background: var(--white); }
+        .intro-container { max-width: 800px; margin: 0 auto; text-align: center; }
+        
+        .intro-container h2 { font-size: 2.4rem; margin-bottom: 30px; }
+        .intro-container p { font-size: 1.1rem; color: var(--text-body); margin-bottom: 20px; }
+
+        .signature {
+            font-family: 'Lora', serif;
+            font-size: 1.5rem;
+            color: var(--accent-clay);
+            margin-top: 40px;
+            font-style: italic;
+        }
+
+        /* --- 6. SERVICES (COPYWRITING ENHANCED) --- */
+        .services-section { padding: 100px 0; background-color: var(--light-sage); }
+        .section-header { text-align: center; margin-bottom: 70px; }
+        .section-header h2 { font-size: 2.5rem; }
+        .section-header .sub-head { color: var(--text-body); font-size: 1.1rem; margin-top: 15px; }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+        }
+
+        .service-card {
+            background: var(--white);
+            padding: 50px 40px;
+            border-top: 4px solid transparent;
+            transition: 0.4s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+        }
+
+        .service-card:hover {
+            border-top: 4px solid var(--accent-clay);
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+        }
+
+        .service-card h3 { font-size: 1.5rem; margin-bottom: 15px; }
+        .service-card p { font-size: 1rem; color: var(--text-body); margin-bottom: 20px; }
+        .service-link { color: var(--accent-clay); font-weight: 700; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* --- 7. TEAM --- */
+        .team-section { padding: 100px 0; background: var(--warm-sand); }
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 60px;
+        }
+        .team-card { text-align: center; }
+        .team-card h4 { font-size: 1.2rem; margin-bottom: 5px; color: var(--primary-sage); }
+        .team-card span { font-size: 0.85rem; color: var(--accent-clay); letter-spacing: 1px; text-transform: uppercase; font-weight: 700; }
+        
+        /* --------------------------------------------------------- */
+        /* --- NEW: 5 CONVERSION ELEMENTS TO GET ADVANCE PAYMENT --- */
+        /* --------------------------------------------------------- */
+
+        /* 1. THE DIFFERENCE (Comparison) */
+        .difference-section { padding: 100px 0; background: var(--white); }
+        .diff-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: center; }
+        .diff-list li {
+            list-style: none;
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: start;
+        }
+        .diff-list li::before {
+            content: "✦";
+            color: var(--accent-clay);
+            margin-right: 15px;
+            font-size: 1.2rem;
+        }
+        .highlight-box {
+            background: var(--primary-sage);
+            color: var(--white);
+            padding: 50px;
+            border-radius: 8px;
+        }
+        .highlight-box h3 { color: var(--white); margin-bottom: 20px; }
+
+        /* 2. THE ROADMAP (Visual Process) */
+        .process-section { padding: 100px 0; background: var(--light-sage); }
+        .process-steps {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-top: 50px;
+            position: relative;
+        }
+        .process-steps::before {
+            content: '';
+            position: absolute;
+            top: 40px; left: 0; width: 100%; height: 2px;
+            background: #cbd5e1;
+            z-index: 0;
+            display: none; /* Hidden on mobile */
+        }
+        @media(min-width: 768px) { .process-steps::before { display: block; } }
+
+        .step-card {
+            background: var(--white);
+            padding: 30px;
+            width: 23%;
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        .step-num {
+            background: var(--accent-clay);
+            color: var(--white);
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 20px;
+            font-weight: 700;
+        }
+
+        /* 3. THE PROMISE (Trust Anchor) */
+        .promise-section {
+            padding: 80px 0;
+            background: var(--primary-sage);
+            color: var(--white);
+            text-align: center;
+        }
+        .promise-box {
+            border: 2px solid rgba(255,255,255,0.2);
+            padding: 50px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .promise-box h2 { color: var(--white); margin-bottom: 20px; }
+        .promise-box p { font-size: 1.2rem; opacity: 0.9; font-style: italic; }
+
+        /* 4. FAQ (Objection Handling) */
+        .faq-section { padding: 100px 0; background: var(--warm-sand); }
+        .faq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 40px; }
+        .faq-item { background: var(--white); padding: 30px; border-radius: 8px; }
+        .faq-item h4 { font-size: 1.1rem; margin-bottom: 10px; color: var(--primary-sage); }
+        .faq-item p { font-size: 0.95rem; color: var(--text-body); }
+
+        /* 5. CONTACT & MAP (REPLACED SECTION) */
+        .contact-section { padding: 100px 0; background: var(--white); }
+        .contact-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            background: var(--light-sage);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+        }
+
+        .contact-info-box {
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .contact-info-box h2 { font-size: 2.2rem; margin-bottom: 20px; }
+        .contact-info-box p { margin-bottom: 30px; font-size: 1.1rem; color: var(--text-body); }
+        
+        .contact-details-item {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            color: var(--primary-sage);
+        }
+        .contact-details-item span { margin-right: 15px; color: var(--accent-clay); font-size: 1.2rem; }
+
+        .btn-call-large {
+            display: inline-block;
+            background-color: var(--accent-clay);
+            color: var(--white);
+            padding: 20px 40px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+            border-radius: 5px;
+            margin-top: 20px;
+            box-shadow: 0 10px 20px rgba(192, 127, 95, 0.3);
+        }
+        .btn-call-large:hover {
+            background-color: var(--primary-sage);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(58, 77, 69, 0.3);
+        }
+
+        .map-box {
+            min-height: 400px;
+            width: 100%;
+        }
+        .map-box iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        /* --- FOOTER --- */
+        footer { background: #1a1a1a; color: #888; padding: 60px 0; font-size: 0.9rem; text-align: center; }
+        footer p { margin-bottom: 10px; }
+
+        /* Responsive adjustments for new hero */
+        @media (max-width: 960px) {
+            .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+            .hero-image-wrapper { order: -1; } /* Image on top for mobile */
+            .hero-img-frame { height: 350px; }
+            .hero h1 { font-size: 3rem; }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .diff-grid { grid-template-columns: 1fr; }
+            .step-card { width: 100%; margin-bottom: 20px; }
+            .faq-grid { grid-template-columns: 1fr; }
+            .contact-wrapper { grid-template-columns: 1fr; }
+            .map-box { height: 300px; }
+        }
+    </style>
+</head>
+<body class="modal-open">
+
+    <div id="disclaimer-modal">
+        <div class="disclaimer-content">
+            <h3>Legal Disclaimer</h3>
+            <p><strong>Compliance with Bar Council of India Rules:</strong></p>
+            <p>As per the rules of the Bar Council of India, law firms are not permitted to solicit work or advertise. By clicking "I Agree," you acknowledge and confirm the following:</p>
+            <ul>
+                <li>There has been no advertisement, personal communication, solicitation, or inducement of any sort whatsoever from Sejwani & Co. or any of its members to solicit any work through this website.</li>
+                <li>You wish to gain more information about Sejwani & Co. for your own information and use.</li>
+                <li>The information relating to the firm is provided to you only on your specific request.</li>
+            </ul>
+            <button class="btn-agree" onclick="closeModal()">I Agree & Enter Site</button>
+        </div>
+    </div>
+
+    <header>
+        <div class="container nav-flex">
+            <div class="logo">Sejwani <span>&amp; Co.</span></div>
+            <a href="#contact" class="header-cta">Book Consultation</a>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container hero-grid">
+            
+            <div class="hero-text-content">
+                <span class="est-pill">Ahmedabad • Est. 1983</span>
+                <h1>We handle the law.<br>You focus on your life.</h1>
+                <p>Walk into our office and leave your anxiety at the door. We combine 40 years of High Court experience with the personal care your family deserves.</p>
+                <a href="#contact" class="btn-hero">Request Priority Consultation</a>
+            </div>
+
+            <div class="hero-image-wrapper">
+                <div class="hero-decor-box"></div>
+                <div class="hero-img-frame">
+                    <img src="office.jpg" alt="Sejwani & Co Office Entrance">
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <section class="intro-section">
+        <div class="container intro-container">
+            <h2>The legal system is complex.<br>Your peace of mind shouldn't be.</h2>
+            <p>At Sejwani & Co., we understand that when you look for a lawyer, you aren't just looking for legal advice—you are looking for a solution to a problem that is keeping you awake at night.</p>
+            <p>We are not a "file-processing factory." We are a boutique family firm. This means when you hire us, you don't get passed down to a junior intern. You get the partners. You get the experience. You get the result.</p>
+            <div class="signature">"Justice, simplified."</div>
+        </div>
+    </section>
+
+    <section class="services-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Our Areas of Expertise</h2>
+                <p class="sub-head">Focused legal solutions designed for results.</p>
+            </div>
+            <div class="services-grid">
+                <div class="service-card">
+                    <h3>Civil Litigation</h3>
+                    <p>Whether in the High Court or District Courts, we provide aggressive and calculated representation to protect your rights.</p>
+                    <span class="service-link">View Details →</span>
+                </div>
+                <div class="service-card">
+                    <h3>Property & RERA</h3>
+                    <p>Real estate transactions involve massive capital. We ensure your documentation is ironclad and your investment is safe.</p>
+                    <span class="service-link">View Details →</span>
+                </div>
+                <div class="service-card">
+                    <h3>Family Disputes</h3>
+                    <p>Matrimonial and family matters require a delicate touch. We fight for your interests while preserving your dignity.</p>
+                    <span class="service-link">View Details →</span>
+                </div>
+                <div class="service-card">
+                    <h3>Corporate Law</h3>
+                    <p>From company formation to complex contracts, we act as your external legal department so you can focus on business growth.</p>
+                    <span class="service-link">View Details →</span>
+                </div>
+                <div class="service-card">
+                    <h3>Testamentary / Wills</h3>
+                    <p>Secure your legacy. We assist in drafting Wills and managing succession to prevent future family conflicts.</p>
+                    <span class="service-link">View Details →</span>
+                </div>
+                <div class="service-card">
+                    <h3>Notary Services</h3>
+                    <p>Govt. authorized execution of affidavits, bonds, and essential legal documentation with speed and accuracy.</p>
+                    <span class="service-link">View Details →</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="team-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Meet Your Advocates</h2>
+                <p class="sub-head">Generations of legal excellence working for you.</p>
+            </div>
+            <div class="team-grid">
+                <div class="team-card">
+                    <h4>Deepak B. Sejwani</h4>
+                    <span>Advocate & Notary</span>
+                </div>
+                <div class="team-card">
+                    <h4>Dhiraj D. Sejwani</h4>
+                    <span>Advocate & Solicitor</span>
+                </div>
+                <div class="team-card">
+                    <h4>Mahesh B. Sejwani</h4>
+                    <span>Bond Writer</span>
+                </div>
+                <div class="team-card">
+                    <h4>Raju D. Sejwani</h4>
+                    <span>Advocate</span>
+                </div>
+                <div class="team-card">
+                    <h4>Anil K. Nagdev</h4>
+                    <span>Advocate</span>
+                </div>
+                <div class="team-card">
+                    <h4>Mukesh K. Nagdev</h4>
+                    <span>Advocate</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="difference-section">
+        <div class="container diff-grid">
+            <div>
+                <h2>Why clients trust Sejwani & Co. over large corporate firms.</h2>
+                <p style="margin-bottom: 30px; color: var(--text-body);">In a large firm, you are a case number. Here, you are a priority. We purposefully limit our caseload to ensure every client gets our full attention.</p>
+                <ul class="diff-list">
+                    <li><strong>Direct Partner Access:</strong> You speak to the decision-makers, not assistants.</li>
+                    <li><strong>Heritage Authority:</strong> Established in 1983. We have seen every trick in the book.</li>
+                    <li><strong>Transparent Fees:</strong> No hidden hourly billing shocks. We quote upfront.</li>
+                    <li><strong>Holistic Strategy:</strong> We don't just win cases; we solve the underlying problem.</li>
+                </ul>
+            </div>
+            <div class="highlight-box">
+                <h3>Our Track Record</h3>
+                <p style="font-size: 1.1rem; opacity: 0.9; margin-bottom: 20px;">We believe in results, not rhetoric. Our firm has successfully navigated thousands of complex legal scenarios across Gujarat.</p>
+                <div style="font-size: 3rem; font-weight: 700; color: var(--accent-clay);">40+</div>
+                <div style="text-transform: uppercase; letter-spacing: 2px; font-size: 0.9rem;">Years of Service</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="process-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Your Path to Resolution</h2>
+                <p class="sub-head">We make the legal process predictable and stress-free.</p>
+            </div>
+            <div class="process-steps">
+                <div class="step-card">
+                    <div class="step-num">1</div>
+                    <h4>The Consultation</h4>
+                    <p style="font-size: 0.9rem; color: #666;">We meet to understand your unique situation and review your documents in detail.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">2</div>
+                    <h4>The Strategy</h4>
+                    <p style="font-size: 0.9rem; color: #666;">We design a custom legal roadmap, explaining your options and probabilities clearly.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">3</div>
+                    <h4>The Action</h4>
+                    <p style="font-size: 0.9rem; color: #666;">We execute the filing, drafting, or representation with aggressive precision.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">4</div>
+                    <h4>The Resolution</h4>
+                    <p style="font-size: 0.9rem; color: #666;">We aim for the most favorable outcome, closing the chapter so you can move on.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="promise-section">
+        <div class="container">
+            <div class="promise-box">
+                <h2>The Sejwani Promise</h2>
+                <p>"We will never suggest a legal battle if a settlement is in your best interest. We are guardians of your time and money, not just your legal rights."</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="faq-section">
+        <div class="container">
+            <h2 style="text-align: center;">Frequently Asked Questions</h2>
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <h4>Do you charge for the first consultation?</h4>
+                    <p>Yes. We provide high-value, actionable legal strategy during our initial meeting. We value our expertise and your time too much to offer generic "free advice."</p>
+                </div>
+                <div class="faq-item">
+                    <h4>How long will my case take?</h4>
+                    <p>While the Indian judicial system can be slow, our "Boutique Speed" approach ensures we file your documents faster than large firms, minimizing avoidable delays.</p>
+                </div>
+                <div class="faq-item">
+                    <h4>Can you handle cases outside Ahmedabad?</h4>
+                    <p>Primarily we operate in Ahmedabad and Gandhinagar High Court, but we have a network of trusted associates for matters across Gujarat.</p>
+                </div>
+                <div class="faq-item">
+                    <h4>Is my information confidential?</h4>
+                    <p>Absolutely. As Advocates & Solicitors, we are bound by strict attorney-client privilege. Your secrets are safe with us.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="contact-section" id="contact">
+        <div class="container">
+            <div class="contact-wrapper">
+                <div class="contact-info-box">
+                    <h2>Visit Our Chambers</h2>
+                    <p>We invite you to our office for a confidential discussion regarding your legal matters.</p>
+                    
+                    <div class="contact-details-item">
+                        <span>📍</span> Ahmedabad, Gujarat, India
+                    </div>
+                    <div class="contact-details-item">
+                        <span>📞</span> +91 79 2644 3200
+                    </div>
+                    <div class="contact-details-item">
+                        <span>✉️</span> advocate.dhirajsejwani@yahoo.com
+                    </div>
+
+                    <a href="tel:07926443200" class="btn-call-large">CALL US NOW</a>
+                    <p style="font-size: 0.85rem; margin-top: 15px; opacity: 0.7;">Mon - Sat: 10:00 AM - 7:00 PM</p>
+                </div>
+
+                <div class="map-box">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3671.936750987304!2d72.5714!3d23.0225!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395e84f5f9f9f9f9%3A0x123456789abcdef!2sAhmedabad%2C+Gujarat!5e0!3m2!1sen!2sin!4v1620000000000!5m2!1sen!2sin" allowfullscreen="" loading="lazy"></iframe>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p style="font-size: 1.2rem; color: #fff; font-family: 'Lora', serif; margin-bottom: 20px;">Sejwani & Co.</p>
+            <p>Advocates, Solicitors & Notaries</p>
+            <p>Ahmedabad, Gujarat, India | +91 79 2644 3200</p>
+            <br>
+            <p>© 1983 - 2026 Sejwani & Co. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Disclaimer Logic
+        function closeModal() {
+            document.getElementById('disclaimer-modal').style.opacity = '0';
+            setTimeout(function(){
+                document.getElementById('disclaimer-modal').style.display = 'none';
+                document.body.classList.remove('modal-open');
+            }, 500);
+        }
+    </script>
+</body>
+</html>
