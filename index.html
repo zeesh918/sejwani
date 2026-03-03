@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
-  <title>🎨 design snapshot · code → preview</title>
+  <title>🎨 design snapshot · instant · download</title>
+  <!-- html2canvas for image download -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
     * {
       margin: 0;
@@ -18,7 +20,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 16px;
+      padding: 12px;
     }
 
     .tool-container {
@@ -27,14 +29,14 @@
       background: rgba(255, 255, 255, 0.7);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
-      border-radius: 36px;
+      border-radius: 32px;
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), inset 0 1px 2px rgba(255,255,255,0.6);
-      padding: 28px 24px;
+      padding: 24px 20px;
       border: 1px solid rgba(255,255,255,0.5);
     }
 
     h1 {
-      font-size: 1.9rem;
+      font-size: 1.8rem;
       font-weight: 600;
       letter-spacing: -0.02em;
       background: linear-gradient(135deg, #1e2b3c, #2d3f56);
@@ -49,9 +51,9 @@
     }
 
     .subhead {
-      font-size: 1rem;
+      font-size: 0.95rem;
       color: #4b5f73;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
       font-weight: 400;
       border-left: 4px solid #6c5ce7;
       padding-left: 16px;
@@ -59,75 +61,70 @@
       border-radius: 0 40px 40px 0;
     }
 
-    /* background control row */
-    .bg-row {
+    /* background control + action row */
+    .action-row {
       display: flex;
       align-items: center;
       flex-wrap: wrap;
-      gap: 20px;
+      gap: 16px;
       background: white;
-      padding: 12px 20px;
+      padding: 12px 18px;
       border-radius: 60px;
-      margin-bottom: 28px;
+      margin-bottom: 24px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.04);
       border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .bg-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 2 1 auto;
+      flex-wrap: wrap;
     }
 
     .bg-label {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       font-weight: 500;
       color: #1e2b3c;
     }
 
-    .bg-label i {
-      font-size: 1.3rem;
-      line-height: 1;
-    }
-
-    .color-picker-wrapper {
+    .color-picker-wrap {
       display: flex;
       align-items: center;
-      gap: 12px;
-      flex: 1 1 auto;
+      gap: 8px;
+      background: #f2f5f9;
+      padding: 4px 8px 4px 12px;
+      border-radius: 40px;
+      border: 1px solid #dee5ed;
     }
 
     #bgColor {
-      width: 48px;
-      height: 48px;
+      width: 42px;
+      height: 42px;
       border: 3px solid white;
       border-radius: 50%;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      transition: transform 0.2s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       background: white;
     }
 
-    #bgColor:hover {
-      transform: scale(1.08);
-    }
-
     #bgHex {
-      background: #f2f5f9;
+      background: transparent;
       border: none;
-      padding: 10px 18px;
-      border-radius: 40px;
-      font-family: 'SF Mono', 'Fira Code', monospace;
-      font-size: 0.95rem;
-      width: 130px;
-      border: 1px solid #dee5ed;
-      transition: 0.2s;
-    }
-    #bgHex:focus {
-      outline: 2px solid #6c5ce7;
-      border-color: transparent;
+      padding: 8px 8px 8px 4px;
+      font-family: 'SF Mono', monospace;
+      font-size: 0.9rem;
+      width: 100px;
+      outline: none;
     }
 
     .example-btn {
       background: #edf2f9;
       border: none;
-      padding: 10px 24px;
+      padding: 10px 22px;
       border-radius: 40px;
       font-weight: 500;
       color: #1e2b3c;
@@ -136,38 +133,50 @@
       gap: 6px;
       cursor: pointer;
       transition: all 0.15s;
-      margin-left: auto;
       border: 1px solid #d0d9e6;
     }
     .example-btn:hover {
       background: #6c5ce7;
       color: white;
       border-color: #6c5ce7;
-      box-shadow: 0 8px 16px -8px #6c5ce7;
+    }
+
+    .download-btn {
+      background: #1e2b3c;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 40px;
+      font-weight: 600;
+      color: white;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: 0.15s;
+      border: 1px solid #ffffff50;
+      margin-left: auto;
+    }
+    .download-btn:hover {
+      background: #6c5ce7;
+      transform: scale(1.02);
     }
 
     /* editor grid */
     .editor-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-      margin-bottom: 28px;
+      gap: 18px;
+      margin-bottom: 24px;
     }
 
     .editor-card {
       background: white;
-      border-radius: 28px;
-      padding: 18px 16px 20px 16px;
+      border-radius: 26px;
+      padding: 16px 14px 18px;
       box-shadow: 0 10px 20px -8px rgba(26, 35, 46, 0.1);
       border: 1px solid rgba(255,255,255,0.6);
-      transition: transform 0.2s;
       display: flex;
       flex-direction: column;
-    }
-
-    .editor-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 20px 28px -12px #1e2b3c33;
     }
 
     .editor-label {
@@ -175,16 +184,16 @@
       align-items: center;
       gap: 8px;
       font-weight: 600;
-      font-size: 1.1rem;
-      margin-bottom: 14px;
+      font-size: 1rem;
+      margin-bottom: 12px;
       color: #2d3f56;
     }
 
     .editor-label span {
       background: #e9eef4;
       border-radius: 30px;
-      padding: 4px 12px;
-      font-size: 0.8rem;
+      padding: 3px 10px;
+      font-size: 0.75rem;
       font-weight: 400;
       color: #4f658d;
     }
@@ -195,9 +204,9 @@
       background: #f8fafd;
       border: 1px solid #dbe2ec;
       border-radius: 20px;
-      padding: 16px;
-      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
-      font-size: 0.9rem;
+      padding: 14px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.85rem;
       line-height: 1.5;
       resize: vertical;
       color: #1a2634;
@@ -214,8 +223,8 @@
     /* preview card */
     .preview-section {
       background: white;
-      border-radius: 32px;
-      padding: 24px 24px 30px 24px;
+      border-radius: 30px;
+      padding: 20px 20px 24px;
       box-shadow: 0 15px 30px -12px #0b1a2a33;
       border: 1px solid rgba(255,255,255,0.7);
     }
@@ -225,7 +234,7 @@
       align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
 
     .preview-header h3 {
@@ -233,17 +242,7 @@
       color: #1e2b3c;
       display: flex;
       align-items: center;
-      gap: 8px;
-    }
-
-    .preview-badge {
-      background: #6c5ce7;
-      color: white;
-      border-radius: 50px;
-      padding: 4px 16px;
-      font-size: 0.8rem;
-      font-weight: 500;
-      letter-spacing: 0.3px;
+      gap: 6px;
     }
 
     .iframe-wrapper {
@@ -262,36 +261,34 @@
       transition: background 0.2s;
     }
 
-    /* mobile adjustments */
+    /* ===== MOBILE FIXES ===== */
     @media (max-width: 800px) {
-      .tool-container { padding: 20px 16px; }
+      .tool-container { padding: 18px 14px; }
       h1 { font-size: 1.6rem; }
       .editor-grid { grid-template-columns: 1fr; gap: 16px; }
-      .bg-row { border-radius: 30px; padding: 16px; }
-      .color-picker-wrapper { flex-wrap: wrap; }
-      .example-btn { margin-left: 0; width: 100%; justify-content: center; }
-      .preview-section { padding: 18px; }
+      .action-row { flex-direction: column; align-items: stretch; border-radius: 40px; padding: 16px; }
+      .bg-group { justify-content: space-between; }
+      .color-picker-wrap { flex: 1; min-width: 180px; }
+      .download-btn { margin-left: 0; justify-content: center; width: 100%; }
+      .example-btn { justify-content: center; }
+      .preview-section { padding: 16px; }
       #previewFrame { height: 380px; }
     }
 
     @media (max-width: 480px) {
-      body { padding: 8px; }
-      .tool-container { border-radius: 28px; padding: 16px; }
-      .bg-label { width: 100%; }
+      body { padding: 6px; }
+      .tool-container { border-radius: 28px; padding: 14px; }
+      .bg-group { flex-direction: column; align-items: flex-start; }
+      .color-picker-wrap { width: 100%; }
       #bgHex { width: 100%; }
+      textarea { height: 160px; }  /* less cramped */
     }
 
-    /* little extra charm */
     .footer-note {
       text-align: center;
-      margin-top: 24px;
-      font-size: 0.85rem;
+      margin-top: 20px;
+      font-size: 0.8rem;
       color: #5d7186;
-      opacity: 0.7;
-    }
-    .footer-note a {
-      color: #6c5ce7;
-      text-decoration: none;
     }
   </style>
 </head>
@@ -300,76 +297,68 @@
     <header style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap;">
       <h1>
         ✦ design snapshot
-        <span style="font-size: 1rem; background: #1e2b3c10; padding: 4px 12px; border-radius: 60px; font-weight: 400;">HTML + CSS + JS</span>
+        <span style="font-size: 0.9rem; background: #1e2b3c10; padding: 4px 12px; border-radius: 60px; font-weight: 400;">HTML + CSS + JS</span>
       </h1>
     </header>
     <div class="subhead">
-      live preview · background changer · responsive canvas
+      instant preview · flexible background · save image
     </div>
 
-    <!-- background control + example -->
-    <div class="bg-row">
-      <div class="bg-label">
-        <i>🎨</i> <span>backdrop</span>
+    <!-- unified row: background tools + download button (warning removed) -->
+    <div class="action-row">
+      <div class="bg-group">
+        <span class="bg-label"><span>🎨</span> backdrop</span>
+        <div class="color-picker-wrap">
+          <input type="color" id="bgColor" value="#f0f4fa">
+          <input type="text" id="bgHex" placeholder="#f0f4fa" value="#f0f4fa" maxlength="7">
+        </div>
+        <button class="example-btn" id="resetExampleBtn">
+          <span>⟳</span> load example
+        </button>
       </div>
-      <div class="color-picker-wrapper">
-        <input type="color" id="bgColor" value="#f0f4fa">
-        <input type="text" id="bgHex" placeholder="#f0f4fa" value="#f0f4fa" maxlength="7">
-      </div>
-      <button class="example-btn" id="resetExampleBtn">
-        <span>⟳</span> load example
+      <button class="download-btn" id="downloadBtn">
+        <span>⬇️</span> download snapshot
       </button>
     </div>
 
-    <!-- 3 editors -->
+    <!-- 3 editors (spacious) -->
     <div class="editor-grid">
-      <!-- HTML card -->
       <div class="editor-card">
-        <div class="editor-label">
-          🌐 HTML <span>body content</span>
-        </div>
+        <div class="editor-label">🌐 HTML <span>structure</span></div>
         <textarea id="htmlInput" placeholder='<div class="card">…</div>'></textarea>
       </div>
-      <!-- CSS card -->
       <div class="editor-card">
-        <div class="editor-label">
-          🎨 CSS <span>styles</span>
-        </div>
+        <div class="editor-label">🎨 CSS <span>styles</span></div>
         <textarea id="cssInput" placeholder="body { ... }"></textarea>
       </div>
-      <!-- JavaScript card -->
       <div class="editor-card">
-        <div class="editor-label">
-          ⚡ JavaScript <span>interactivity</span>
-        </div>
-        <textarea id="jsInput" placeholder="// event listeners, etc."></textarea>
+        <div class="editor-label">⚡ JavaScript <span>interaction</span></div>
+        <textarea id="jsInput" placeholder="// event listeners"></textarea>
       </div>
     </div>
 
-    <!-- preview area -->
+    <!-- preview area (no warning badge) -->
     <div class="preview-section">
       <div class="preview-header">
-        <h3>
-          <span>🔍</span> live snapshot
-        </h3>
-        <div class="preview-badge">background override active</div>
+        <h3><span>🔍</span> live snapshot</h3>
+        <!-- badge completely removed per request -->
       </div>
       <div class="iframe-wrapper">
-        <iframe id="previewFrame" sandbox="allow-scripts allow-forms allow-modals" title="design preview"></iframe>
+        <iframe id="previewFrame" sandbox="allow-scripts allow-forms allow-same-origin" title="design preview"></iframe>
       </div>
-      <div style="font-size:0.85rem; margin-top: 14px; color:#4f658d; display: flex; gap: 18px; flex-wrap: wrap;">
-        <span>⬤ background color is forced (overrides root background)</span>
-        <span>⚡ JS runs inside sandbox</span>
+      <div style="font-size:0.8rem; margin-top: 12px; color:#4f658d; display: flex; gap: 16px; flex-wrap: wrap;">
+        <span>⬤ background forced</span>
+        <span>⚡ js runs inside</span>
       </div>
     </div>
     <div class="footer-note">
-      ✦ write code → see changes instantly ✦
+      ✦ code updates instantly · click download to capture ✦
     </div>
   </div>
 
   <script>
     (function() {
-      // get all elements
+      // --- DOM elements ---
       const htmlInput = document.getElementById('htmlInput');
       const cssInput = document.getElementById('cssInput');
       const jsInput = document.getElementById('jsInput');
@@ -377,8 +366,9 @@
       const bgHex = document.getElementById('bgHex');
       const previewFrame = document.getElementById('previewFrame');
       const resetBtn = document.getElementById('resetExampleBtn');
+      const downloadBtn = document.getElementById('downloadBtn');
 
-      // ---- default beautiful example (card with interactive button) ----
+      // --- example snippet (beautiful + interactive) ---
       const defaultHTML = `<div class="card">
   <h2>✨ Interactive card</h2>
   <p>Click the button – JavaScript updates the time.</p>
@@ -394,7 +384,7 @@
   min-height: 100vh;
   margin: 0;
   padding: 16px;
-  /* background will be overridden by the tool, but we keep a gradient as fallback */
+  /* background will be overridden by tool */
   background: linear-gradient(145deg, #f9f6ff, #e9e4ff);
 }
 .card {
@@ -449,27 +439,26 @@ button:hover {
   document.getElementById('message').textContent = '🕒 last click: ' + timeStr;
 });`;
 
-      // set initial values
+      // fill with example
       htmlInput.value = defaultHTML;
       cssInput.value = defaultCSS;
       jsInput.value = defaultJS;
       bgColor.value = '#f0f4fa';
       bgHex.value = '#f0f4fa';
 
-      // escape </script> in JS to avoid breaking out of our injected script tag
+      // escape </script> in JS to avoid breaking out of srcdoc
       function escapeJS(js) {
         return js.replace(/<\/script>/gi, '<\\/script>');
       }
 
-      // update preview
+      // --- update preview instantly (no debounce, fully automatic) ---
       function updatePreview() {
         const html = htmlInput.value;
         const css = cssInput.value;
         const rawJS = jsInput.value;
         const escapedJS = escapeJS(rawJS);
-        const color = bgColor.value;  // hex from color picker
+        const color = bgColor.value;
 
-        // build full HTML document
         const doc = `
 <!DOCTYPE html>
 <html>
@@ -477,7 +466,6 @@ button:hover {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>${css}</style>
-  <!-- background override (with !important) -->
   <style>html, body { background-color: ${color} !important; }</style>
 </head>
 <body>
@@ -485,69 +473,93 @@ button:hover {
   <script>${escapedJS}<\/script>
 </body>
 </html>`;
-
         previewFrame.srcdoc = doc;
       }
 
-      // debounce helper to avoid many updates while typing
-      function debounce(func, delay) {
-        let timer;
-        return function(...args) {
-          clearTimeout(timer);
-          timer = setTimeout(() => func.apply(this, args), delay);
-        };
-      }
+      // immediate update on any input
+      htmlInput.addEventListener('input', updatePreview);
+      cssInput.addEventListener('input', updatePreview);
+      jsInput.addEventListener('input', updatePreview);
 
-      const debouncedUpdate = debounce(updatePreview, 250);
-
-      // event listeners: update on any input, color change, hex change
-      htmlInput.addEventListener('input', debouncedUpdate);
-      cssInput.addEventListener('input', debouncedUpdate);
-      jsInput.addEventListener('input', debouncedUpdate);
+      // background color sync
       bgColor.addEventListener('input', function() {
         bgHex.value = this.value;
-        debouncedUpdate();
+        updatePreview();
       });
 
       bgHex.addEventListener('input', function(e) {
         let val = e.target.value.trim();
-        // basic validation: if it looks like a hex color, update picker and preview
         if (/^#[0-9A-Fa-f]{6}$/.test(val) || /^#[0-9A-Fa-f]{3}$/.test(val)) {
           bgColor.value = val;
-          debouncedUpdate();
-        } else {
-          // if invalid, still try to update but might not change color picker; we ignore.
-          // but we can try to correct simple 3-digit hex? not necessary.
+          updatePreview();
         }
       });
-
-      // also update when hex loses focus (in case they typed an incomplete value)
-      bgHex.addEventListener('change', function(e) {
-        let val = e.target.value.trim();
+      bgHex.addEventListener('change', function() {
+        let val = bgHex.value.trim();
         if (!/^#[0-9A-Fa-f]{6}$/.test(val) && !/^#[0-9A-Fa-f]{3}$/.test(val)) {
-          // revert to current color picker value
-          bgHex.value = bgColor.value;
+          bgHex.value = bgColor.value;  // revert
         } else {
           bgColor.value = val;
-          debouncedUpdate();
+          updatePreview();
         }
       });
 
-      // reset to example
+      // reset example
       resetBtn.addEventListener('click', function() {
         htmlInput.value = defaultHTML;
         cssInput.value = defaultCSS;
         jsInput.value = defaultJS;
         bgColor.value = '#f0f4fa';
         bgHex.value = '#f0f4fa';
-        updatePreview(); // immediate update
+        updatePreview();
+      });
+
+      // --- DOWNLOAD SNAPSHOT (image) ---
+      downloadBtn.addEventListener('click', function() {
+        const iframe = previewFrame;
+        // show loading indicator (simple)
+        downloadBtn.innerHTML = '<span>⏳</span> capturing...';
+        downloadBtn.disabled = true;
+
+        // Wait a tiny bit for any pending updates, then capture
+        setTimeout(() => {
+          // Access iframe document (allow-same-origin makes it possible)
+          const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+          if (!iframeDoc) {
+            alert('Could not access preview content.');
+            resetButton();
+            return;
+          }
+
+          // Use html2canvas on the body of the iframe, with background color forced
+          html2canvas(iframeDoc.body, {
+            scale: 1.5,              // nicer quality
+            backgroundColor: bgColor.value,  // consistent background
+            allowTaint: false,
+            useCORS: true,
+            logging: false
+          }).then(canvas => {
+            // Convert to download link
+            const link = document.createElement('a');
+            link.download = 'design-snapshot.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            resetButton();
+          }).catch(err => {
+            console.warn('html2canvas error:', err);
+            alert('Snapshot failed – see console.');
+            resetButton();
+          });
+        }, 100); // short delay to ensure iframe content is stable
+
+        function resetButton() {
+          downloadBtn.innerHTML = '<span>⬇️</span> download snapshot';
+          downloadBtn.disabled = false;
+        }
       });
 
       // initial render
       updatePreview();
-
-      // small fix: iframe height adjustment on load is automatic, but we keep it
-      // optional: run update on window resize? not necessary.
     })();
   </script>
 </body>
