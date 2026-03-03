@@ -3,308 +3,115 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
-  <title>🎨 design snapshot · instant · download</title>
-  <!-- html2canvas for image download -->
+  <title>🎨 design snapshot · full HTML support · download</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
+    /* same beautiful, mobile‑optimized styles as before */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       background: linear-gradient(145deg, #f0f4fa 0%, #e6ecf5 100%);
-      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: 'Inter', system-ui, sans-serif;
       min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: flex; align-items: center; justify-content: center;
       padding: 12px;
     }
-
     .tool-container {
-      max-width: 1400px;
-      width: 100%;
-      background: rgba(255, 255, 255, 0.7);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-radius: 32px;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), inset 0 1px 2px rgba(255,255,255,0.6);
-      padding: 24px 20px;
+      max-width: 1400px; width: 100%;
+      background: rgba(255,255,255,0.7); backdrop-filter: blur(12px);
+      border-radius: 32px; padding: 24px 20px;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25), inset 0 1px 2px rgba(255,255,255,0.6);
       border: 1px solid rgba(255,255,255,0.5);
     }
-
     h1 {
-      font-size: 1.8rem;
-      font-weight: 600;
-      letter-spacing: -0.02em;
+      font-size: 1.8rem; font-weight: 600;
       background: linear-gradient(135deg, #1e2b3c, #2d3f56);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      margin-bottom: 4px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
     }
-
     .subhead {
-      font-size: 0.95rem;
-      color: #4b5f73;
-      margin-bottom: 20px;
-      font-weight: 400;
-      border-left: 4px solid #6c5ce7;
-      padding-left: 16px;
-      background: rgba(108, 92, 231, 0.06);
-      border-radius: 0 40px 40px 0;
+      font-size: 0.95rem; color: #4b5f73; margin-bottom: 20px;
+      border-left: 4px solid #6c5ce7; padding-left: 16px;
+      background: rgba(108,92,231,0.06); border-radius: 0 40px 40px 0;
     }
-
-    /* background control + action row */
     .action-row {
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 16px;
-      background: white;
-      padding: 12px 18px;
-      border-radius: 60px;
-      margin-bottom: 24px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+      display: flex; align-items: center; flex-wrap: wrap; gap: 16px;
+      background: white; padding: 12px 18px; border-radius: 60px;
+      margin-bottom: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.04);
       border: 1px solid rgba(0,0,0,0.05);
     }
-
     .bg-group {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex: 2 1 auto;
-      flex-wrap: wrap;
+      display: flex; align-items: center; gap: 12px; flex: 2 1 auto; flex-wrap: wrap;
     }
-
-    .bg-label {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-weight: 500;
-      color: #1e2b3c;
-    }
-
+    .bg-label { display: flex; align-items: center; gap: 6px; font-weight: 500; color: #1e2b3c; }
     .color-picker-wrap {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: #f2f5f9;
-      padding: 4px 8px 4px 12px;
-      border-radius: 40px;
+      display: flex; align-items: center; gap: 8px;
+      background: #f2f5f9; padding: 4px 8px 4px 12px; border-radius: 40px;
       border: 1px solid #dee5ed;
     }
-
-    #bgColor {
-      width: 42px;
-      height: 42px;
-      border: 3px solid white;
-      border-radius: 50%;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      background: white;
-    }
-
-    #bgHex {
-      background: transparent;
-      border: none;
-      padding: 8px 8px 8px 4px;
-      font-family: 'SF Mono', monospace;
-      font-size: 0.9rem;
-      width: 100px;
-      outline: none;
-    }
-
+    #bgColor { width: 42px; height: 42px; border: 3px solid white; border-radius: 50%; cursor: pointer; }
+    #bgHex { background: transparent; border: none; padding: 8px; font-family: monospace; width: 100px; outline: none; }
     .example-btn {
-      background: #edf2f9;
-      border: none;
-      padding: 10px 22px;
-      border-radius: 40px;
-      font-weight: 500;
-      color: #1e2b3c;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-      transition: all 0.15s;
-      border: 1px solid #d0d9e6;
+      background: #edf2f9; border: none; padding: 10px 22px; border-radius: 40px;
+      font-weight: 500; color: #1e2b3c; display: inline-flex; align-items: center; gap: 6px;
+      cursor: pointer; border: 1px solid #d0d9e6;
     }
-    .example-btn:hover {
-      background: #6c5ce7;
-      color: white;
-      border-color: #6c5ce7;
-    }
-
+    .example-btn:hover { background: #6c5ce7; color: white; }
     .download-btn {
-      background: #1e2b3c;
-      border: none;
-      padding: 10px 24px;
-      border-radius: 40px;
-      font-weight: 600;
-      color: white;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-      transition: 0.15s;
-      border: 1px solid #ffffff50;
-      margin-left: auto;
+      background: #1e2b3c; border: none; padding: 10px 24px; border-radius: 40px;
+      font-weight: 600; color: white; display: inline-flex; align-items: center; gap: 8px;
+      cursor: pointer; margin-left: auto; border: 1px solid #ffffff50;
     }
-    .download-btn:hover {
-      background: #6c5ce7;
-      transform: scale(1.02);
-    }
-
-    /* editor grid */
+    .download-btn:hover { background: #6c5ce7; }
     .editor-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 18px;
-      margin-bottom: 24px;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-bottom: 24px;
     }
-
     .editor-card {
-      background: white;
-      border-radius: 26px;
-      padding: 16px 14px 18px;
-      box-shadow: 0 10px 20px -8px rgba(26, 35, 46, 0.1);
-      border: 1px solid rgba(255,255,255,0.6);
-      display: flex;
-      flex-direction: column;
+      background: white; border-radius: 26px; padding: 16px 14px 18px;
+      box-shadow: 0 10px 20px -8px rgba(26,35,46,0.1); border: 1px solid rgba(255,255,255,0.6);
+      display: flex; flex-direction: column;
     }
-
     .editor-label {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-weight: 600;
-      font-size: 1rem;
-      margin-bottom: 12px;
-      color: #2d3f56;
+      display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 1rem;
+      margin-bottom: 12px; color: #2d3f56;
     }
-
-    .editor-label span {
-      background: #e9eef4;
-      border-radius: 30px;
-      padding: 3px 10px;
-      font-size: 0.75rem;
-      font-weight: 400;
-      color: #4f658d;
-    }
-
+    .editor-label span { background: #e9eef4; border-radius: 30px; padding: 3px 10px; font-size: 0.75rem; color: #4f658d; }
     textarea {
-      width: 100%;
-      height: 200px;
-      background: #f8fafd;
-      border: 1px solid #dbe2ec;
-      border-radius: 20px;
-      padding: 14px;
-      font-family: 'SF Mono', 'Fira Code', monospace;
-      font-size: 0.85rem;
-      line-height: 1.5;
-      resize: vertical;
-      color: #1a2634;
-      outline: none;
+      width: 100%; height: 200px; background: #f8fafd; border: 1px solid #dbe2ec;
+      border-radius: 20px; padding: 14px; font-family: 'SF Mono', monospace; font-size: 0.85rem;
+      line-height: 1.5; resize: vertical; color: #1a2634; outline: none;
       transition: border 0.2s, box-shadow 0.2s;
-      box-shadow: inset 0 2px 5px rgba(0,0,0,0.02);
     }
-
-    textarea:focus {
-      border-color: #6c5ce7;
-      box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.15);
-    }
-
-    /* preview card */
+    textarea:focus { border-color: #6c5ce7; box-shadow: 0 0 0 4px rgba(108,92,231,0.15); }
     .preview-section {
-      background: white;
-      border-radius: 30px;
-      padding: 20px 20px 24px;
-      box-shadow: 0 15px 30px -12px #0b1a2a33;
-      border: 1px solid rgba(255,255,255,0.7);
+      background: white; border-radius: 30px; padding: 20px 20px 24px;
+      box-shadow: 0 15px 30px -12px #0b1a2a33; border: 1px solid rgba(255,255,255,0.7);
     }
-
-    .preview-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      margin-bottom: 14px;
-    }
-
-    .preview-header h3 {
-      font-weight: 600;
-      color: #1e2b3c;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .iframe-wrapper {
-      background: #ffffff;
-      border-radius: 24px;
-      overflow: hidden;
-      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.04), 0 10px 25px -15px #00000050;
-    }
-
-    #previewFrame {
-      width: 100%;
-      height: 420px;
-      border: none;
-      display: block;
-      background: transparent;
-      transition: background 0.2s;
-    }
-
-    /* ===== MOBILE FIXES ===== */
+    .preview-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .preview-header h3 { font-weight: 600; color: #1e2b3c; display: flex; align-items: center; gap: 6px; }
+    .iframe-wrapper { background: #fff; border-radius: 24px; overflow: hidden; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.04), 0 10px 25px -15px #000; }
+    #previewFrame { width: 100%; height: 420px; border: none; display: block; background: transparent; }
     @media (max-width: 800px) {
       .tool-container { padding: 18px 14px; }
-      h1 { font-size: 1.6rem; }
-      .editor-grid { grid-template-columns: 1fr; gap: 16px; }
+      .editor-grid { grid-template-columns: 1fr; }
       .action-row { flex-direction: column; align-items: stretch; border-radius: 40px; padding: 16px; }
-      .bg-group { justify-content: space-between; }
-      .color-picker-wrap { flex: 1; min-width: 180px; }
       .download-btn { margin-left: 0; justify-content: center; width: 100%; }
-      .example-btn { justify-content: center; }
-      .preview-section { padding: 16px; }
       #previewFrame { height: 380px; }
     }
-
     @media (max-width: 480px) {
       body { padding: 6px; }
-      .tool-container { border-radius: 28px; padding: 14px; }
-      .bg-group { flex-direction: column; align-items: flex-start; }
-      .color-picker-wrap { width: 100%; }
-      #bgHex { width: 100%; }
-      textarea { height: 160px; }  /* less cramped */
+      .tool-container { padding: 14px; }
+      textarea { height: 160px; }
     }
-
-    .footer-note {
-      text-align: center;
-      margin-top: 20px;
-      font-size: 0.8rem;
-      color: #5d7186;
-    }
+    .footer-note { text-align: center; margin-top: 20px; font-size: 0.8rem; color: #5d7186; }
   </style>
 </head>
 <body>
   <div class="tool-container">
     <header style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap;">
-      <h1>
-        ✦ design snapshot
-        <span style="font-size: 0.9rem; background: #1e2b3c10; padding: 4px 12px; border-radius: 60px; font-weight: 400;">HTML + CSS + JS</span>
-      </h1>
+      <h1>✦ design snapshot <span style="font-size:0.9rem; background:#1e2b3c10; padding:4px 12px; border-radius:60px;">HTML + CSS + JS</span></h1>
     </header>
-    <div class="subhead">
-      instant preview · flexible background · save image
-    </div>
+    <div class="subhead">instant preview · background override · full HTML support · download image</div>
 
-    <!-- unified row: background tools + download button (warning removed) -->
     <div class="action-row">
       <div class="bg-group">
         <span class="bg-label"><span>🎨</span> backdrop</span>
@@ -312,53 +119,30 @@
           <input type="color" id="bgColor" value="#f0f4fa">
           <input type="text" id="bgHex" placeholder="#f0f4fa" value="#f0f4fa" maxlength="7">
         </div>
-        <button class="example-btn" id="resetExampleBtn">
-          <span>⟳</span> load example
-        </button>
+        <button class="example-btn" id="resetExampleBtn"><span>⟳</span> load example</button>
       </div>
-      <button class="download-btn" id="downloadBtn">
-        <span>⬇️</span> download snapshot
-      </button>
+      <button class="download-btn" id="downloadBtn"><span>⬇️</span> download snapshot</button>
     </div>
 
-    <!-- 3 editors (spacious) -->
     <div class="editor-grid">
-      <div class="editor-card">
-        <div class="editor-label">🌐 HTML <span>structure</span></div>
-        <textarea id="htmlInput" placeholder='<div class="card">…</div>'></textarea>
-      </div>
-      <div class="editor-card">
-        <div class="editor-label">🎨 CSS <span>styles</span></div>
-        <textarea id="cssInput" placeholder="body { ... }"></textarea>
-      </div>
-      <div class="editor-card">
-        <div class="editor-label">⚡ JavaScript <span>interaction</span></div>
-        <textarea id="jsInput" placeholder="// event listeners"></textarea>
-      </div>
+      <div class="editor-card"><div class="editor-label">🌐 HTML <span>full document or snippet</span></div><textarea id="htmlInput" placeholder='<!DOCTYPE html><html>...'></textarea></div>
+      <div class="editor-card"><div class="editor-label">🎨 CSS <span>extra styles</span></div><textarea id="cssInput" placeholder="body { ... }"></textarea></div>
+      <div class="editor-card"><div class="editor-label">⚡ JavaScript <span>extra code</span></div><textarea id="jsInput" placeholder="// interactivity"></textarea></div>
     </div>
 
-    <!-- preview area (no warning badge) -->
     <div class="preview-section">
-      <div class="preview-header">
-        <h3><span>🔍</span> live snapshot</h3>
-        <!-- badge completely removed per request -->
-      </div>
-      <div class="iframe-wrapper">
-        <iframe id="previewFrame" sandbox="allow-scripts allow-forms allow-same-origin" title="design preview"></iframe>
-      </div>
-      <div style="font-size:0.8rem; margin-top: 12px; color:#4f658d; display: flex; gap: 16px; flex-wrap: wrap;">
-        <span>⬤ background forced</span>
-        <span>⚡ js runs inside</span>
+      <div class="preview-header"><h3><span>🔍</span> live snapshot</h3></div>
+      <div class="iframe-wrapper"><iframe id="previewFrame" sandbox="allow-scripts allow-forms allow-same-origin" title="preview"></iframe></div>
+      <div style="font-size:0.8rem; margin-top:12px; color:#4f658d; display:flex; gap:16px; flex-wrap:wrap;">
+        <span>⬤ background forced</span><span>⚡ full HTML documents are merged automatically</span>
       </div>
     </div>
-    <div class="footer-note">
-      ✦ code updates instantly · click download to capture ✦
-    </div>
+    <div class="footer-note">✦ code updates instantly · click download to capture ✦</div>
   </div>
 
   <script>
     (function() {
-      // --- DOM elements ---
+      // DOM elements
       const htmlInput = document.getElementById('htmlInput');
       const cssInput = document.getElementById('cssInput');
       const jsInput = document.getElementById('jsInput');
@@ -368,125 +152,129 @@
       const resetBtn = document.getElementById('resetExampleBtn');
       const downloadBtn = document.getElementById('downloadBtn');
 
-      // --- example snippet (beautiful + interactive) ---
-      const defaultHTML = `<div class="card">
-  <h2>✨ Interactive card</h2>
-  <p>Click the button – JavaScript updates the time.</p>
-  <button id="actionBtn">click me</button>
-  <p id="message" style="margin-top:1rem; font-weight:500;">ready.</p>
-</div>`;
+      // --- Example (interactive card) ---
+      const defaultHTML = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: system-ui; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+    .card { background: rgba(255,255,255,0.8); backdrop-filter: blur(8px); border-radius: 42px; padding: 2rem; box-shadow: 0 30px 45px -25px #6c5ce7; max-width: 440px; text-align: center; }
+    button { background: #6c5ce7; border: none; color: white; font-weight: 600; padding: 14px 32px; border-radius: 60px; cursor: pointer; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>✨ Interactive card</h2>
+    <p>Click the button – time updates.</p>
+    <button id="actionBtn">click me</button>
+    <p id="message">ready.</p>
+  </div>
+  <script>
+    document.getElementById('actionBtn').addEventListener('click', function() {
+      document.getElementById('message').textContent = new Date().toLocaleTimeString();
+    });
+  <\/script>
+</body>
+</html>`;
+      const defaultCSS = '';    // no extra CSS, it's inside the HTML
+      const defaultJS = '';      // no extra JS, it's inside
 
-      const defaultCSS = `body {
-  font-family: 'Inter', system-ui, sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  margin: 0;
-  padding: 16px;
-  /* background will be overridden by tool */
-  background: linear-gradient(145deg, #f9f6ff, #e9e4ff);
-}
-.card {
-  background: rgba(255,255,255,0.75);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-radius: 42px;
-  padding: 2.2rem 2rem;
-  box-shadow: 0 30px 45px -25px #6c5ce7, 0 8px 20px -8px rgba(0,0,0,0.15);
-  max-width: 440px;
-  width: 100%;
-  text-align: center;
-  border: 1px solid rgba(255,255,255,0.7);
-}
-h2 {
-  color: #1e2b3c;
-  font-weight: 600;
-  margin-top: 0;
-  margin-bottom: 0.5rem;
-}
-button {
-  background: #6c5ce7;
-  border: none;
-  color: white;
-  font-weight: 600;
-  font-size: 1.1rem;
-  padding: 14px 32px;
-  border-radius: 60px;
-  cursor: pointer;
-  box-shadow: 0 10px 20px -8px #6c5ce7;
-  transition: all 0.2s ease;
-  border: 1px solid rgba(255,255,255,0.3);
-  margin: 1.2rem 0 0.8rem;
-}
-button:hover {
-  background: #5b4bc4;
-  transform: scale(1.02) translateY(-2px);
-  box-shadow: 0 20px 25px -10px #6c5ce7;
-}
-#message {
-  background: #f1f3f8;
-  padding: 10px 18px;
-  border-radius: 60px;
-  font-size: 0.95rem;
-  color: #1e2b3c;
-  border: 1px solid #dfe7f0;
-}`;
-
-      const defaultJS = `document.getElementById('actionBtn').addEventListener('click', function() {
-  const now = new Date();
-  const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-  document.getElementById('message').textContent = '🕒 last click: ' + timeStr;
-});`;
-
-      // fill with example
       htmlInput.value = defaultHTML;
       cssInput.value = defaultCSS;
       jsInput.value = defaultJS;
       bgColor.value = '#f0f4fa';
       bgHex.value = '#f0f4fa';
 
-      // escape </script> in JS to avoid breaking out of srcdoc
+      // --- Helper: escape </script> inside JS string ---
       function escapeJS(js) {
         return js.replace(/<\/script>/gi, '<\\/script>');
       }
 
-      // --- update preview instantly (no debounce, fully automatic) ---
-      function updatePreview() {
-        const html = htmlInput.value;
-        const css = cssInput.value;
-        const rawJS = jsInput.value;
-        const escapedJS = escapeJS(rawJS);
-        const color = bgColor.value;
+      // --- Intelligent document builder: supports both snippets and full HTML ---
+      function buildDocument() {
+        const userHTML = htmlInput.value;
+        const userCSS = cssInput.value;
+        const userJS = jsInput.value;
+        const escapedJS = escapeJS(userJS);
+        const bg = bgColor.value;
 
-        const doc = `
-<!DOCTYPE html>
+        // Heuristic: if userHTML looks like a full document (contains <html or <!DOCTYPE)
+        const isFullDocument = /<html\b/i.test(userHTML) || /<!DOCTYPE\s+html/i.test(userHTML);
+
+        if (!isFullDocument) {
+          // Simple snippet: wrap in our own document
+          return `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>${css}</style>
-  <style>html, body { background-color: ${color} !important; }</style>
+  <style>${userCSS}</style>
+  <style>html, body { background-color: ${bg} !important; }</style>
 </head>
 <body>
-  ${html}
+  ${userHTML}
   <script>${escapedJS}<\/script>
 </body>
 </html>`;
+        } else {
+          // Full document: inject our extra CSS/JS and background override intelligently
+          let modified = userHTML;
+
+          // 1. Inject background override style (we place it just before </head>)
+          const bgStyle = `<style>html, body { background-color: ${bg} !important; }</style>`;
+          if (/<\/head>/i.test(modified)) {
+            modified = modified.replace(/<\/head>/i, bgStyle + '\n</head>');
+          } else if (/<head>/i.test(modified)) {
+            // If <head> exists but no </head>, insert after <head>
+            modified = modified.replace(/<head>/i, '<head>\n' + bgStyle);
+          } else {
+            // No head at all: prepend to <html> or whole document
+            if (/<html/i.test(modified)) {
+              modified = modified.replace(/<html[^>]*>/i, '$&\n<head>\n' + bgStyle + '\n</head>');
+            } else {
+              // Really bare, just prepend a head
+              modified = '<head>\n' + bgStyle + '\n</head>\n' + modified;
+            }
+          }
+
+          // 2. Inject user CSS (if any) right before </head> (after bg style)
+          if (userCSS.trim() !== '') {
+            const userStyle = `<style>${userCSS}</style>`;
+            modified = modified.replace(/<\/head>/i, userStyle + '\n</head>');
+          }
+
+          // 3. Inject user JavaScript (if any) right before </body>
+          if (escapedJS.trim() !== '') {
+            const userScript = `<script>${escapedJS}<\/script>`;
+            if (/<\/body>/i.test(modified)) {
+              modified = modified.replace(/<\/body>/i, userScript + '\n</body>');
+            } else if (/<\/html>/i.test(modified)) {
+              modified = modified.replace(/<\/html>/i, userScript + '\n</html>');
+            } else {
+              // No body/html tag: append at the end
+              modified += '\n' + userScript;
+            }
+          }
+
+          return modified;
+        }
+      }
+
+      // --- Update preview (automatic, no debounce) ---
+      function updatePreview() {
+        const doc = buildDocument();
         previewFrame.srcdoc = doc;
       }
 
-      // immediate update on any input
+      // Attach listeners
       htmlInput.addEventListener('input', updatePreview);
       cssInput.addEventListener('input', updatePreview);
       jsInput.addEventListener('input', updatePreview);
-
-      // background color sync
       bgColor.addEventListener('input', function() {
         bgHex.value = this.value;
         updatePreview();
       });
-
       bgHex.addEventListener('input', function(e) {
         let val = e.target.value.trim();
         if (/^#[0-9A-Fa-f]{6}$/.test(val) || /^#[0-9A-Fa-f]{3}$/.test(val)) {
@@ -504,7 +292,6 @@ button:hover {
         }
       });
 
-      // reset example
       resetBtn.addEventListener('click', function() {
         htmlInput.value = defaultHTML;
         cssInput.value = defaultCSS;
@@ -514,45 +301,33 @@ button:hover {
         updatePreview();
       });
 
-      // --- DOWNLOAD SNAPSHOT (image) ---
+      // --- Download snapshot (unchanged) ---
       downloadBtn.addEventListener('click', function() {
-        const iframe = previewFrame;
-        // show loading indicator (simple)
         downloadBtn.innerHTML = '<span>⏳</span> capturing...';
         downloadBtn.disabled = true;
-
-        // Wait a tiny bit for any pending updates, then capture
         setTimeout(() => {
-          // Access iframe document (allow-same-origin makes it possible)
-          const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-          if (!iframeDoc) {
-            alert('Could not access preview content.');
-            resetButton();
-            return;
-          }
-
-          // Use html2canvas on the body of the iframe, with background color forced
+          const iframeDoc = previewFrame.contentDocument || previewFrame.contentWindow.document;
+          if (!iframeDoc) { alert('Cannot access preview.'); resetBtnState(); return; }
           html2canvas(iframeDoc.body, {
-            scale: 1.5,              // nicer quality
-            backgroundColor: bgColor.value,  // consistent background
+            scale: 1.5,
+            backgroundColor: bgColor.value,
             allowTaint: false,
             useCORS: true,
             logging: false
           }).then(canvas => {
-            // Convert to download link
             const link = document.createElement('a');
             link.download = 'design-snapshot.png';
             link.href = canvas.toDataURL('image/png');
             link.click();
-            resetButton();
+            resetBtnState();
           }).catch(err => {
-            console.warn('html2canvas error:', err);
+            console.warn(err);
             alert('Snapshot failed – see console.');
-            resetButton();
+            resetBtnState();
           });
-        }, 100); // short delay to ensure iframe content is stable
+        }, 120);
 
-        function resetButton() {
+        function resetBtnState() {
           downloadBtn.innerHTML = '<span>⬇️</span> download snapshot';
           downloadBtn.disabled = false;
         }
