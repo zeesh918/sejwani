@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HTML to Image Snapshot Tool</title>
+    <title>HTML to Image Snapshot Tool V2</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         body {
@@ -33,7 +33,7 @@
         textarea {
             flex: 1;
             width: 100%;
-            padding: 10px;
+            padding: 15px;
             font-family: monospace;
             border: 1px solid #d1d5db;
             border-radius: 4px;
@@ -43,53 +43,88 @@
         }
         .controls {
             display: flex;
-            align-items: center;
+            flex-direction: column;
             gap: 15px;
             margin-bottom: 15px;
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
         }
-        button {
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        select, button {
+            padding: 8px 12px;
+            border-radius: 4px;
+            border: 1px solid #cbd5e1;
+            font-size: 1rem;
+        }
+        .btn-generate {
             background-color: #2563eb;
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
             cursor: pointer;
             font-weight: bold;
+            padding: 12px;
             transition: background 0.2s;
         }
-        button:hover {
+        .btn-generate:hover {
             background-color: #1d4ed8;
         }
-        /* The container where the HTML is temporarily rendered */
-        #render-container {
-            width: 100%;
-            min-height: 200px;
-            border: 1px dashed #d1d5db;
-            padding: 20px;
-            box-sizing: border-box;
-            overflow: hidden;
-            position: relative;
+        
+        /* The container setup for rendering */
+        #offscreen-wrapper {
+            position: absolute;
+            left: -9999px;
+            top: 0;
         }
-        /* The final image output area */
+        
+        /* This wrapper handles the background, padding, and the outer border */
+        #snapshot-frame {
+            padding: 40px; /* Space for background to show around the design */
+            border: 3px solid #1e293b; /* Border on the edges of the image */
+            box-sizing: border-box;
+            width: 800px; /* Fixed width for consistent snapshots */
+        }
+
+        /* This container holds the user's actual HTML */
+        #render-container {
+            background: #ffffff; /* Default background for the code itself */
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15); /* Nice shadow separating code from background */
+            overflow: hidden;
+            min-height: 200px;
+        }
+
         #result-container {
             margin-top: 20px;
             text-align: center;
+            overflow-y: auto;
         }
         #result-image {
             max-width: 100%;
-            border: 1px solid #e5e7eb;
             border-radius: 4px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             display: none;
         }
         .download-btn {
             display: none;
             background-color: #10b981;
+            color: white;
             margin-top: 15px;
             text-decoration: none;
             text-align: center;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-weight: bold;
             width: fit-content;
             margin-left: auto;
             margin-right: auto;
+            border: none;
+            cursor: pointer;
         }
         .download-btn:hover {
             background-color: #059669;
@@ -100,72 +135,108 @@
 
     <div class="panel">
         <h2>1. Paste HTML/CSS Code</h2>
-        <textarea id="code-input" placeholder="<h1>Hello World</h1><style>h1 { color: red; }</style>"></textarea>
+        <textarea id="code-input" placeholder="<div style='padding: 20px; text-align: center;'>&#10;  <h1>Hello World</h1>&#10;  <p>Your design goes here.</p>&#10;</div>"></textarea>
         
         <div class="controls">
-            <label for="bg-color"><strong>Background:</strong></label>
-            <input type="color" id="bg-color" value="#ffffff">
-            
-            <button onclick="generateSnapshot()">Generate High-Q Snapshot</button>
+            <div class="control-group">
+                <label for="bg-preset"><strong>Background Style:</strong></label>
+                <select id="bg-preset">
+                    <option value="#ffffff">Solid White</option>
+                    <option value="#1e293b">Solid Dark Grey</option>
+                    <option value="#9ca3af">Solid Light Grey</option>
+                    <option value="#000000">Solid Black</option>
+                    <option value="linear-gradient(135deg, #667eea 0%, #764ba2 100%)">Gradient: Purple Twilight</option>
+                    <option value="linear-gradient(120deg, #f6d365 0%, #fda085 100%)">Gradient: Warm Sunset</option>
+                    <option value="linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%)">Gradient: Fresh Mint</option>
+                    <option value="linear-gradient(to right, #4facfe 0%, #00f2fe 100%)">Gradient: Ocean Blue</option>
+                </select>
+            </div>
+            <button class="btn-generate" onclick="generateSnapshot()">Generate High-Q Snapshot</button>
         </div>
     </div>
 
-    <div class="panel" style="overflow-y: auto;">
+    <div class="panel">
         <h2>2. Snapshot Result</h2>
         
-        <div style="position: absolute; left: -9999px;">
-            <div id="render-container"></div>
+        <div id="offscreen-wrapper">
+            <div id="snapshot-frame">
+                <div id="render-container"></div>
+            </div>
         </div>
 
         <div id="result-container">
             <img id="result-image" alt="Generated Snapshot">
-            <a id="download-link" class="download-btn button" download="website-snapshot.png">
-                <button class="download-btn" style="display: block;">Download Image</button>
+            <a id="download-link" download="website-snapshot.png" style="text-decoration: none;">
+                <button class="download-btn" id="download-button">Download Image</button>
             </a>
         </div>
     </div>
 
     <script>
+        // Store the object URL globally so we can clean it up to prevent memory leaks
+        let currentObjectURL = null;
+
         async function generateSnapshot() {
             const rawCode = document.getElementById('code-input').value;
-            const bgColor = document.getElementById('bg-color').value;
+            const bgVal = document.getElementById('bg-preset').value;
+            const frame = document.getElementById('snapshot-frame');
             const renderContainer = document.getElementById('render-container');
             const resultImage = document.getElementById('result-image');
             const downloadLink = document.getElementById('download-link');
+            const downloadButton = document.getElementById('download-button');
 
             if (!rawCode.trim()) {
                 alert("Please enter some HTML code first.");
                 return;
             }
 
-            // 1. Inject the user's HTML into the render container
+            // 1. Inject the user's HTML into the inner container
             renderContainer.innerHTML = rawCode;
             
-            // 2. Apply the chosen background color to the container
-            renderContainer.style.backgroundColor = bgColor;
+            // 2. Apply the chosen background to the outer frame
+            frame.style.background = bgVal;
+
+            // Change button text to show it's working
+            const generateBtn = document.querySelector('.btn-generate');
+            generateBtn.innerText = "Generating...";
+            generateBtn.disabled = true;
 
             try {
-                // 3. Capture the container using html2canvas
-                const canvas = await html2canvas(renderContainer, {
-                    scale: 3, // High-quality multiplier (3x resolution)
-                    backgroundColor: bgColor,
-                    useCORS: true, // Attempt to load cross-origin images if present
+                // 3. Capture the outer frame (which includes the border, padding, and background)
+                const canvas = await html2canvas(frame, {
+                    scale: 3, // High quality
+                    backgroundColor: null, // Allow the CSS background to show through naturally
+                    useCORS: true,
                     logging: false
                 });
 
-                // 4. Convert canvas to an image URL (PNG)
-                const imgData = canvas.toDataURL('image/png');
+                // 4. Convert canvas to a Blob (Fixes the download crash issue)
+                canvas.toBlob(function(blob) {
+                    // Clean up the old memory link if it exists
+                    if (currentObjectURL) {
+                        URL.revokeObjectURL(currentObjectURL);
+                    }
 
-                // 5. Display the image and setup the download link
-                resultImage.src = imgData;
-                resultImage.style.display = 'block';
-                
-                downloadLink.href = imgData;
-                downloadLink.style.display = 'block';
+                    // Create a safe, temporary URL for the large file
+                    currentObjectURL = URL.createObjectURL(blob);
+
+                    // 5. Display the image and setup the download link
+                    resultImage.src = currentObjectURL;
+                    resultImage.style.display = 'block';
+                    
+                    downloadLink.href = currentObjectURL;
+                    downloadButton.style.display = 'block';
+
+                    // Reset button
+                    generateBtn.innerText = "Generate High-Q Snapshot";
+                    generateBtn.disabled = false;
+                }, 'image/png');
 
             } catch (error) {
                 console.error("Error generating snapshot:", error);
-                alert("Failed to generate snapshot. Check console for details.");
+                alert("Failed to generate snapshot. Check browser console for details.");
+                generateBtn.innerText = "Generate High-Q Snapshot";
+                generateBtn.disabled = false;
             }
         }
     </script>
