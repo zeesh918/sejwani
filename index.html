@@ -1,244 +1,554 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HTML to Image Snapshot Tool V2</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <style>
-        body {
-            font-family: system-ui, -apple-system, sans-serif;
-            background-color: #f3f4f6;
-            color: #1f2937;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            gap: 20px;
-            height: 100vh;
-            box-sizing: border-box;
-        }
-        .panel {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        h2 {
-            margin-top: 0;
-            font-size: 1.25rem;
-        }
-        textarea {
-            flex: 1;
-            width: 100%;
-            padding: 15px;
-            font-family: monospace;
-            border: 1px solid #d1d5db;
-            border-radius: 4px;
-            resize: none;
-            box-sizing: border-box;
-            margin-bottom: 15px;
-        }
-        .controls {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-bottom: 15px;
-            background: #f8fafc;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
-        }
-        .control-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        select, button {
-            padding: 8px 12px;
-            border-radius: 4px;
-            border: 1px solid #cbd5e1;
-            font-size: 1rem;
-        }
-        .btn-generate {
-            background-color: #2563eb;
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-            padding: 12px;
-            transition: background 0.2s;
-        }
-        .btn-generate:hover {
-            background-color: #1d4ed8;
-        }
-        
-        /* The container setup for rendering */
-        #offscreen-wrapper {
-            position: absolute;
-            left: -9999px;
-            top: 0;
-        }
-        
-        /* This wrapper handles the background, padding, and the outer border */
-        #snapshot-frame {
-            padding: 40px; /* Space for background to show around the design */
-            border: 3px solid #1e293b; /* Border on the edges of the image */
-            box-sizing: border-box;
-            width: 800px; /* Fixed width for consistent snapshots */
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+  <title>🎨 design snapshot · code → preview</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        /* This container holds the user's actual HTML */
-        #render-container {
-            background: #ffffff; /* Default background for the code itself */
-            border-radius: 8px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15); /* Nice shadow separating code from background */
-            overflow: hidden;
-            min-height: 200px;
-        }
+    body {
+      background: linear-gradient(145deg, #f0f4fa 0%, #e6ecf5 100%);
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
 
-        #result-container {
-            margin-top: 20px;
-            text-align: center;
-            overflow-y: auto;
-        }
-        #result-image {
-            max-width: 100%;
-            border-radius: 4px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            display: none;
-        }
-        .download-btn {
-            display: none;
-            background-color: #10b981;
-            color: white;
-            margin-top: 15px;
-            text-decoration: none;
-            text-align: center;
-            padding: 12px 24px;
-            border-radius: 4px;
-            font-weight: bold;
-            width: fit-content;
-            margin-left: auto;
-            margin-right: auto;
-            border: none;
-            cursor: pointer;
-        }
-        .download-btn:hover {
-            background-color: #059669;
-        }
-    </style>
+    .tool-container {
+      max-width: 1400px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 36px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), inset 0 1px 2px rgba(255,255,255,0.6);
+      padding: 28px 24px;
+      border: 1px solid rgba(255,255,255,0.5);
+    }
+
+    h1 {
+      font-size: 1.9rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #1e2b3c, #2d3f56);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .subhead {
+      font-size: 1rem;
+      color: #4b5f73;
+      margin-bottom: 24px;
+      font-weight: 400;
+      border-left: 4px solid #6c5ce7;
+      padding-left: 16px;
+      background: rgba(108, 92, 231, 0.06);
+      border-radius: 0 40px 40px 0;
+    }
+
+    /* background control row */
+    .bg-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+      background: white;
+      padding: 12px 20px;
+      border-radius: 60px;
+      margin-bottom: 28px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+      border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .bg-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 500;
+      color: #1e2b3c;
+    }
+
+    .bg-label i {
+      font-size: 1.3rem;
+      line-height: 1;
+    }
+
+    .color-picker-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1 1 auto;
+    }
+
+    #bgColor {
+      width: 48px;
+      height: 48px;
+      border: 3px solid white;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      transition: transform 0.2s ease;
+      background: white;
+    }
+
+    #bgColor:hover {
+      transform: scale(1.08);
+    }
+
+    #bgHex {
+      background: #f2f5f9;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 40px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.95rem;
+      width: 130px;
+      border: 1px solid #dee5ed;
+      transition: 0.2s;
+    }
+    #bgHex:focus {
+      outline: 2px solid #6c5ce7;
+      border-color: transparent;
+    }
+
+    .example-btn {
+      background: #edf2f9;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 40px;
+      font-weight: 500;
+      color: #1e2b3c;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+      margin-left: auto;
+      border: 1px solid #d0d9e6;
+    }
+    .example-btn:hover {
+      background: #6c5ce7;
+      color: white;
+      border-color: #6c5ce7;
+      box-shadow: 0 8px 16px -8px #6c5ce7;
+    }
+
+    /* editor grid */
+    .editor-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+
+    .editor-card {
+      background: white;
+      border-radius: 28px;
+      padding: 18px 16px 20px 16px;
+      box-shadow: 0 10px 20px -8px rgba(26, 35, 46, 0.1);
+      border: 1px solid rgba(255,255,255,0.6);
+      transition: transform 0.2s;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .editor-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 28px -12px #1e2b3c33;
+    }
+
+    .editor-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: 14px;
+      color: #2d3f56;
+    }
+
+    .editor-label span {
+      background: #e9eef4;
+      border-radius: 30px;
+      padding: 4px 12px;
+      font-size: 0.8rem;
+      font-weight: 400;
+      color: #4f658d;
+    }
+
+    textarea {
+      width: 100%;
+      height: 200px;
+      background: #f8fafd;
+      border: 1px solid #dbe2ec;
+      border-radius: 20px;
+      padding: 16px;
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      resize: vertical;
+      color: #1a2634;
+      outline: none;
+      transition: border 0.2s, box-shadow 0.2s;
+      box-shadow: inset 0 2px 5px rgba(0,0,0,0.02);
+    }
+
+    textarea:focus {
+      border-color: #6c5ce7;
+      box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.15);
+    }
+
+    /* preview card */
+    .preview-section {
+      background: white;
+      border-radius: 32px;
+      padding: 24px 24px 30px 24px;
+      box-shadow: 0 15px 30px -12px #0b1a2a33;
+      border: 1px solid rgba(255,255,255,0.7);
+    }
+
+    .preview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .preview-header h3 {
+      font-weight: 600;
+      color: #1e2b3c;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .preview-badge {
+      background: #6c5ce7;
+      color: white;
+      border-radius: 50px;
+      padding: 4px 16px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+    }
+
+    .iframe-wrapper {
+      background: #ffffff;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.04), 0 10px 25px -15px #00000050;
+    }
+
+    #previewFrame {
+      width: 100%;
+      height: 420px;
+      border: none;
+      display: block;
+      background: transparent;
+      transition: background 0.2s;
+    }
+
+    /* mobile adjustments */
+    @media (max-width: 800px) {
+      .tool-container { padding: 20px 16px; }
+      h1 { font-size: 1.6rem; }
+      .editor-grid { grid-template-columns: 1fr; gap: 16px; }
+      .bg-row { border-radius: 30px; padding: 16px; }
+      .color-picker-wrapper { flex-wrap: wrap; }
+      .example-btn { margin-left: 0; width: 100%; justify-content: center; }
+      .preview-section { padding: 18px; }
+      #previewFrame { height: 380px; }
+    }
+
+    @media (max-width: 480px) {
+      body { padding: 8px; }
+      .tool-container { border-radius: 28px; padding: 16px; }
+      .bg-label { width: 100%; }
+      #bgHex { width: 100%; }
+    }
+
+    /* little extra charm */
+    .footer-note {
+      text-align: center;
+      margin-top: 24px;
+      font-size: 0.85rem;
+      color: #5d7186;
+      opacity: 0.7;
+    }
+    .footer-note a {
+      color: #6c5ce7;
+      text-decoration: none;
+    }
+  </style>
 </head>
 <body>
-
-    <div class="panel">
-        <h2>1. Paste HTML/CSS Code</h2>
-        <textarea id="code-input" placeholder="<div style='padding: 20px; text-align: center;'>&#10;  <h1>Hello World</h1>&#10;  <p>Your design goes here.</p>&#10;</div>"></textarea>
-        
-        <div class="controls">
-            <div class="control-group">
-                <label for="bg-preset"><strong>Background Style:</strong></label>
-                <select id="bg-preset">
-                    <option value="#ffffff">Solid White</option>
-                    <option value="#1e293b">Solid Dark Grey</option>
-                    <option value="#9ca3af">Solid Light Grey</option>
-                    <option value="#000000">Solid Black</option>
-                    <option value="linear-gradient(135deg, #667eea 0%, #764ba2 100%)">Gradient: Purple Twilight</option>
-                    <option value="linear-gradient(120deg, #f6d365 0%, #fda085 100%)">Gradient: Warm Sunset</option>
-                    <option value="linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%)">Gradient: Fresh Mint</option>
-                    <option value="linear-gradient(to right, #4facfe 0%, #00f2fe 100%)">Gradient: Ocean Blue</option>
-                </select>
-            </div>
-            <button class="btn-generate" onclick="generateSnapshot()">Generate High-Q Snapshot</button>
-        </div>
+  <div class="tool-container">
+    <header style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap;">
+      <h1>
+        ✦ design snapshot
+        <span style="font-size: 1rem; background: #1e2b3c10; padding: 4px 12px; border-radius: 60px; font-weight: 400;">HTML + CSS + JS</span>
+      </h1>
+    </header>
+    <div class="subhead">
+      live preview · background changer · responsive canvas
     </div>
 
-    <div class="panel">
-        <h2>2. Snapshot Result</h2>
-        
-        <div id="offscreen-wrapper">
-            <div id="snapshot-frame">
-                <div id="render-container"></div>
-            </div>
-        </div>
-
-        <div id="result-container">
-            <img id="result-image" alt="Generated Snapshot">
-            <a id="download-link" download="website-snapshot.png" style="text-decoration: none;">
-                <button class="download-btn" id="download-button">Download Image</button>
-            </a>
-        </div>
+    <!-- background control + example -->
+    <div class="bg-row">
+      <div class="bg-label">
+        <i>🎨</i> <span>backdrop</span>
+      </div>
+      <div class="color-picker-wrapper">
+        <input type="color" id="bgColor" value="#f0f4fa">
+        <input type="text" id="bgHex" placeholder="#f0f4fa" value="#f0f4fa" maxlength="7">
+      </div>
+      <button class="example-btn" id="resetExampleBtn">
+        <span>⟳</span> load example
+      </button>
     </div>
 
-    <script>
-        // Store the object URL globally so we can clean it up to prevent memory leaks
-        let currentObjectURL = null;
+    <!-- 3 editors -->
+    <div class="editor-grid">
+      <!-- HTML card -->
+      <div class="editor-card">
+        <div class="editor-label">
+          🌐 HTML <span>body content</span>
+        </div>
+        <textarea id="htmlInput" placeholder='<div class="card">…</div>'></textarea>
+      </div>
+      <!-- CSS card -->
+      <div class="editor-card">
+        <div class="editor-label">
+          🎨 CSS <span>styles</span>
+        </div>
+        <textarea id="cssInput" placeholder="body { ... }"></textarea>
+      </div>
+      <!-- JavaScript card -->
+      <div class="editor-card">
+        <div class="editor-label">
+          ⚡ JavaScript <span>interactivity</span>
+        </div>
+        <textarea id="jsInput" placeholder="// event listeners, etc."></textarea>
+      </div>
+    </div>
 
-        async function generateSnapshot() {
-            const rawCode = document.getElementById('code-input').value;
-            const bgVal = document.getElementById('bg-preset').value;
-            const frame = document.getElementById('snapshot-frame');
-            const renderContainer = document.getElementById('render-container');
-            const resultImage = document.getElementById('result-image');
-            const downloadLink = document.getElementById('download-link');
-            const downloadButton = document.getElementById('download-button');
+    <!-- preview area -->
+    <div class="preview-section">
+      <div class="preview-header">
+        <h3>
+          <span>🔍</span> live snapshot
+        </h3>
+        <div class="preview-badge">background override active</div>
+      </div>
+      <div class="iframe-wrapper">
+        <iframe id="previewFrame" sandbox="allow-scripts allow-forms allow-modals" title="design preview"></iframe>
+      </div>
+      <div style="font-size:0.85rem; margin-top: 14px; color:#4f658d; display: flex; gap: 18px; flex-wrap: wrap;">
+        <span>⬤ background color is forced (overrides root background)</span>
+        <span>⚡ JS runs inside sandbox</span>
+      </div>
+    </div>
+    <div class="footer-note">
+      ✦ write code → see changes instantly ✦
+    </div>
+  </div>
 
-            if (!rawCode.trim()) {
-                alert("Please enter some HTML code first.");
-                return;
-            }
+  <script>
+    (function() {
+      // get all elements
+      const htmlInput = document.getElementById('htmlInput');
+      const cssInput = document.getElementById('cssInput');
+      const jsInput = document.getElementById('jsInput');
+      const bgColor = document.getElementById('bgColor');
+      const bgHex = document.getElementById('bgHex');
+      const previewFrame = document.getElementById('previewFrame');
+      const resetBtn = document.getElementById('resetExampleBtn');
 
-            // 1. Inject the user's HTML into the inner container
-            renderContainer.innerHTML = rawCode;
-            
-            // 2. Apply the chosen background to the outer frame
-            frame.style.background = bgVal;
+      // ---- default beautiful example (card with interactive button) ----
+      const defaultHTML = `<div class="card">
+  <h2>✨ Interactive card</h2>
+  <p>Click the button – JavaScript updates the time.</p>
+  <button id="actionBtn">click me</button>
+  <p id="message" style="margin-top:1rem; font-weight:500;">ready.</p>
+</div>`;
 
-            // Change button text to show it's working
-            const generateBtn = document.querySelector('.btn-generate');
-            generateBtn.innerText = "Generating...";
-            generateBtn.disabled = true;
+      const defaultCSS = `body {
+  font-family: 'Inter', system-ui, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  padding: 16px;
+  /* background will be overridden by the tool, but we keep a gradient as fallback */
+  background: linear-gradient(145deg, #f9f6ff, #e9e4ff);
+}
+.card {
+  background: rgba(255,255,255,0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 42px;
+  padding: 2.2rem 2rem;
+  box-shadow: 0 30px 45px -25px #6c5ce7, 0 8px 20px -8px rgba(0,0,0,0.15);
+  max-width: 440px;
+  width: 100%;
+  text-align: center;
+  border: 1px solid rgba(255,255,255,0.7);
+}
+h2 {
+  color: #1e2b3c;
+  font-weight: 600;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+button {
+  background: #6c5ce7;
+  border: none;
+  color: white;
+  font-weight: 600;
+  font-size: 1.1rem;
+  padding: 14px 32px;
+  border-radius: 60px;
+  cursor: pointer;
+  box-shadow: 0 10px 20px -8px #6c5ce7;
+  transition: all 0.2s ease;
+  border: 1px solid rgba(255,255,255,0.3);
+  margin: 1.2rem 0 0.8rem;
+}
+button:hover {
+  background: #5b4bc4;
+  transform: scale(1.02) translateY(-2px);
+  box-shadow: 0 20px 25px -10px #6c5ce7;
+}
+#message {
+  background: #f1f3f8;
+  padding: 10px 18px;
+  border-radius: 60px;
+  font-size: 0.95rem;
+  color: #1e2b3c;
+  border: 1px solid #dfe7f0;
+}`;
 
-            try {
-                // 3. Capture the outer frame (which includes the border, padding, and background)
-                const canvas = await html2canvas(frame, {
-                    scale: 3, // High quality
-                    backgroundColor: null, // Allow the CSS background to show through naturally
-                    useCORS: true,
-                    logging: false
-                });
+      const defaultJS = `document.getElementById('actionBtn').addEventListener('click', function() {
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  document.getElementById('message').textContent = '🕒 last click: ' + timeStr;
+});`;
 
-                // 4. Convert canvas to a Blob (Fixes the download crash issue)
-                canvas.toBlob(function(blob) {
-                    // Clean up the old memory link if it exists
-                    if (currentObjectURL) {
-                        URL.revokeObjectURL(currentObjectURL);
-                    }
+      // set initial values
+      htmlInput.value = defaultHTML;
+      cssInput.value = defaultCSS;
+      jsInput.value = defaultJS;
+      bgColor.value = '#f0f4fa';
+      bgHex.value = '#f0f4fa';
 
-                    // Create a safe, temporary URL for the large file
-                    currentObjectURL = URL.createObjectURL(blob);
+      // escape </script> in JS to avoid breaking out of our injected script tag
+      function escapeJS(js) {
+        return js.replace(/<\/script>/gi, '<\\/script>');
+      }
 
-                    // 5. Display the image and setup the download link
-                    resultImage.src = currentObjectURL;
-                    resultImage.style.display = 'block';
-                    
-                    downloadLink.href = currentObjectURL;
-                    downloadButton.style.display = 'block';
+      // update preview
+      function updatePreview() {
+        const html = htmlInput.value;
+        const css = cssInput.value;
+        const rawJS = jsInput.value;
+        const escapedJS = escapeJS(rawJS);
+        const color = bgColor.value;  // hex from color picker
 
-                    // Reset button
-                    generateBtn.innerText = "Generate High-Q Snapshot";
-                    generateBtn.disabled = false;
-                }, 'image/png');
+        // build full HTML document
+        const doc = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>${css}</style>
+  <!-- background override (with !important) -->
+  <style>html, body { background-color: ${color} !important; }</style>
+</head>
+<body>
+  ${html}
+  <script>${escapedJS}<\/script>
+</body>
+</html>`;
 
-            } catch (error) {
-                console.error("Error generating snapshot:", error);
-                alert("Failed to generate snapshot. Check browser console for details.");
-                generateBtn.innerText = "Generate High-Q Snapshot";
-                generateBtn.disabled = false;
-            }
+        previewFrame.srcdoc = doc;
+      }
+
+      // debounce helper to avoid many updates while typing
+      function debounce(func, delay) {
+        let timer;
+        return function(...args) {
+          clearTimeout(timer);
+          timer = setTimeout(() => func.apply(this, args), delay);
+        };
+      }
+
+      const debouncedUpdate = debounce(updatePreview, 250);
+
+      // event listeners: update on any input, color change, hex change
+      htmlInput.addEventListener('input', debouncedUpdate);
+      cssInput.addEventListener('input', debouncedUpdate);
+      jsInput.addEventListener('input', debouncedUpdate);
+      bgColor.addEventListener('input', function() {
+        bgHex.value = this.value;
+        debouncedUpdate();
+      });
+
+      bgHex.addEventListener('input', function(e) {
+        let val = e.target.value.trim();
+        // basic validation: if it looks like a hex color, update picker and preview
+        if (/^#[0-9A-Fa-f]{6}$/.test(val) || /^#[0-9A-Fa-f]{3}$/.test(val)) {
+          bgColor.value = val;
+          debouncedUpdate();
+        } else {
+          // if invalid, still try to update but might not change color picker; we ignore.
+          // but we can try to correct simple 3-digit hex? not necessary.
         }
-    </script>
+      });
+
+      // also update when hex loses focus (in case they typed an incomplete value)
+      bgHex.addEventListener('change', function(e) {
+        let val = e.target.value.trim();
+        if (!/^#[0-9A-Fa-f]{6}$/.test(val) && !/^#[0-9A-Fa-f]{3}$/.test(val)) {
+          // revert to current color picker value
+          bgHex.value = bgColor.value;
+        } else {
+          bgColor.value = val;
+          debouncedUpdate();
+        }
+      });
+
+      // reset to example
+      resetBtn.addEventListener('click', function() {
+        htmlInput.value = defaultHTML;
+        cssInput.value = defaultCSS;
+        jsInput.value = defaultJS;
+        bgColor.value = '#f0f4fa';
+        bgHex.value = '#f0f4fa';
+        updatePreview(); // immediate update
+      });
+
+      // initial render
+      updatePreview();
+
+      // small fix: iframe height adjustment on load is automatic, but we keep it
+      // optional: run update on window resize? not necessary.
+    })();
+  </script>
 </body>
 </html>
